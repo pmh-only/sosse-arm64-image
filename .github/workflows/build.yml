@@ -34,7 +34,7 @@ jobs:
         if: steps.check.outputs.VERSION_UPDATED == 1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "ci: pydio updated `${{ steps.check.outputs.VERSION }}`"
+          message: "ci: SOSSE updated `${{ steps.check.outputs.VERSION }}`"
 
   build:
     name: Build image
