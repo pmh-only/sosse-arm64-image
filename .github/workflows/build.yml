@@ -58,27 +58,28 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build base Docker image
-        uses: docker/build-push-action@v5
-        with:
-          push: false
-          platforms: linux/arm64
-          context: sosse/
-          file: sosse/docker/pip-base/Dockerfile
-          tags: biolds/sosse:pip-base
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          
-      - name: Copy necessary files to build Docker image
-        run: |
-          cp sosse/docker/run.sh sosse/debian/uwsgi.* sosse/debian/sosse.conf sosse/
-
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build base Docker image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          platforms: linux/arm64
+          context: sosse/
+          file: sosse/docker/pip-base/Dockerfile
+          tags: ghcr.io/pmh-only/sosse:pip-base
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Copy necessary files to build Docker image
+        run: |
+          cp sosse/docker/run.sh sosse/debian/uwsgi.* sosse/debian/sosse.conf sosse/
+          sed -ie 's,biolds/sosse:pip-base,ghcr.io/pmh-only/sosse:pip-base,' sosse/docker/pip-compose/Dockerfile
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
